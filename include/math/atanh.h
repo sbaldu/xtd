@@ -2,7 +2,7 @@
 #pragma once
 
 #include "internal/defines.h"
-#include <type_traits>
+#include <concepts>
 
 #if !defined(XTD_TARGET_CUDA) && !defined(XTD_TARGET_HIP) && !defined(XTD_TARGET_SYCL)
 #include <cmath>
@@ -47,7 +47,7 @@ namespace xtd {
   XTD_DEVICE_FUNCTION
   inline constexpr float atanhf(float arg) { return atanh(arg); }
 
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
+  template <std::integral T>
   XTD_DEVICE_FUNCTION inline constexpr double atanh(T arg) {
     return atanh(static_cast<double>(arg));
   }

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "internal/defines.h"
+#include "internal/concepts.h"
 #include <type_traits>
 
 #if !defined(XTD_TARGET_CUDA) && !defined(XTD_TARGET_HIP) && !defined(XTD_TARGET_SYCL)
@@ -10,7 +11,7 @@
 
 namespace xtd {
 
-  template <typename T>
+  template <Numeric T>
   XTD_DEVICE_FUNCTION inline constexpr const T& min(const T& a, const T& b) {
 #if defined(XTD_TARGET_CUDA)
     // CUDA device code
@@ -27,7 +28,7 @@ namespace xtd {
 #endif
   }
 
-  template <typename T, typename Compare>
+  template <Numeric T, typename Compare>
   XTD_DEVICE_FUNCTION inline constexpr const T& min(const T& a, const T& b, Compare comp) {
 #if defined(XTD_TARGET_CUDA)
     // CUDA device code
