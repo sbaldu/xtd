@@ -10,9 +10,8 @@
 
 namespace xtd {
 
-  template <typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
   XTD_DEVICE_FUNCTION
-  inline constexpr T tanh(T arg) {
+  inline constexpr float tanh(float arg) {
 #if defined(XTD_TARGET_CUDA)
     // CUDA device code
     return ::tanh(arg);
@@ -29,19 +28,27 @@ namespace xtd {
   }
 
   XTD_DEVICE_FUNCTION
-  inline constexpr float tanhf(float arg) {
-    return tanh(arg);
+  inline constexpr double tanh(double arg) {
+#if defined(XTD_TARGET_CUDA)
+    // CUDA device code
+    return ::tanh(arg);
+#elif defined(XTD_TARGET_HIP)
+    // HIP/ROCm device code
+    return ::tanh(arg);
+#elif defined(XTD_TARGET_SYCL)
+    // SYCL device code
+    return sycl::tanh(arg);
+#else
+    // stanhdard C++ code
+    return std::tanh(arg);
+#endif
   }
 
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
   XTD_DEVICE_FUNCTION
-  inline constexpr long double tanhl(long double arg) {
-    return tanh(arg);
-  }
+  inline constexpr float tanhf(float arg) { return tanh(arg); }
 
   template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
-  XTD_DEVICE_FUNCTION
-  inline constexpr double tanh(T arg) {
+  XTD_DEVICE_FUNCTION inline constexpr double tanh(T arg) {
     return tanh(static_cast<double>(arg));
   }
 
