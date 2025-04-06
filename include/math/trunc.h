@@ -2,7 +2,7 @@
 #pragma once
 
 #include "internal/defines.h"
-#include <type_traits>
+#include <concepts>
 
 #if !defined(XTD_TARGET_CUDA) && !defined(XTD_TARGET_HIP) && !defined(XTD_TARGET_SYCL)
 #include <cmath>
@@ -44,7 +44,7 @@ namespace xtd {
 
   XTD_DEVICE_FUNCTION inline constexpr float truncf(float x) { return trunc(x); }
 
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
+  template <std::integral T>
   XTD_DEVICE_FUNCTION inline constexpr double trunc(T x) {
     return trunc(static_cast<double>(x));
   }

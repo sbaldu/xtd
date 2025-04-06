@@ -6,11 +6,8 @@
 
 #pragma once
 
-#include <cmath>
-#include <type_traits>
-
 #include "internal/defines.h"
-#include <type_traits>
+#include <concepts>
 
 #if !defined(XTD_TARGET_CUDA) && !defined(XTD_TARGET_HIP) && !defined(XTD_TARGET_SYCL)
 #include <cmath>
@@ -59,7 +56,7 @@ namespace xtd {
   /* Computes the sine of arg (measured in radians),
    * in double precision.
    */
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
+  template <std::integral T>
   XTD_DEVICE_FUNCTION inline constexpr double sin(T arg) {
     return sin(static_cast<double>(arg));
   }
@@ -72,7 +69,7 @@ namespace xtd {
   /* Computes the sine of arg (measured in radians),
    * in single precision.
    */
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
+  template <std::integral T>
   XTD_DEVICE_FUNCTION inline constexpr double sinf(T arg) {
     return sin(static_cast<float>(arg));
   }

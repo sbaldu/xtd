@@ -12,7 +12,7 @@ HOST_CXXFLAGS := -O2 -fPIC -pthread -march=native -Wall -Wextra -Werror -Wfatal-
 # Compiler flags supported by GCC but not by the LLVM-based compilers (clang, hipcc, icpx, etc.)
 LLVM_UNSUPPORTED_CXXFLAGS := --param vect-max-version-for-alias-checks=50 -Werror=format-contains-nul -Wno-non-template-friend -Werror=return-local-addr -Werror=unused-but-set-variable
 
-CXXFLAGS := -std=c++17 $(HOST_CXXFLAGS) -g
+CXXFLAGS := -std=c++20 $(HOST_CXXFLAGS) -g
 LDFLAGS := -O2 -fPIC -pthread -Wl,-E -lstdc++fs -ldl
 
 # CUDA
@@ -31,11 +31,11 @@ else
   CUDA_NVCC := $(CUDA_BASE)/bin/nvcc
   define CUFLAGS_template
     $(2)NVCC_FLAGS := $$(foreach ARCH,$(1),-gencode arch=compute_$$(ARCH),code=[sm_$$(ARCH),compute_$$(ARCH)]) -Wno-deprecated-gpu-targets -Xcudafe --diag_suppress=esa_on_defaulted_function_ignored --expt-relaxed-constexpr --expt-extended-lambda --generate-line-info --source-in-ptx --display-error-number --threads $$(words $(1)) --cudart=shared
-    $(2)NVCC_COMMON := -std=c++17 -O3 -g $$($(2)NVCC_FLAGS) -ccbin $(CXX) --compiler-options '$(HOST_CXXFLAGS)'
+    $(2)NVCC_COMMON := -std=c++20 -O3 -g $$($(2)NVCC_FLAGS) -ccbin $(CXX) --compiler-options '$(HOST_CXXFLAGS)'
     $(2)CUDA_CUFLAGS := $$($(2)NVCC_COMMON)
   endef
   $(eval $(call CUFLAGS_template,$(CUDA_ARCH),))
-  NVCC_COMMON := -std=c++17 -O3 -g $(NVCC_FLAGS) -ccbin $(CXX) --compiler-options '$(HOST_CXXFLAGS)'
+  NVCC_COMMON := -std=c++20 -O3 -g $(NVCC_FLAGS) -ccbin $(CXX) --compiler-options '$(HOST_CXXFLAGS)'
   CUDA_CUFLAGS := $(NVCC_COMMON)
 endif
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "internal/defines.h"
-#include <type_traits>
+#include <concepts>
 
 #if !defined(XTD_TARGET_CUDA) && !defined(XTD_TARGET_HIP) && !defined(XTD_TARGET_SYCL)
 #include <cmath>
@@ -42,23 +42,9 @@ namespace xtd {
 #endif
   }
 
-  XTD_DEVICE_FUNCTION inline constexpr float fabsf(float x) {
-#if defined(XTD_TARGET_CUDA)
-    // CUDA device code
-    return ::fabsf(x);
-#elif defined(XTD_TARGET_HIP)
-    // HIP/ROCm device code
-    return ::fabsf(x);
-#elif defined(XTD_TARGET_SYCL)
-    // SYCL device code
-    return sycl::fabsf(x);
-#else
-    // standard C++ code
-    return fabsf(x);
-#endif
-  }
+  XTD_DEVICE_FUNCTION inline constexpr float fabsf(float x) { return abs(x); }
 
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
+  template <std::integral T>
   XTD_DEVICE_FUNCTION inline constexpr double fabs(T x) {
 #if defined(XTD_TARGET_CUDA)
     // CUDA device code

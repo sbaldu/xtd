@@ -2,7 +2,6 @@
 #pragma once
 
 #include "internal/defines.h"
-#include <type_traits>
 
 #if !defined(XTD_TARGET_CUDA) && !defined(XTD_TARGET_HIP) && !defined(XTD_TARGET_SYCL)
 #include <cmath>
@@ -42,6 +41,6 @@ namespace xtd {
 #endif
   }
 
-  XTD_DEVICE_FUNCTION inline constexpr float powf(float base, float exp) { return powf(base, exp); }
+  XTD_DEVICE_FUNCTION inline constexpr float powf(float base, float exp) { return pow(base, exp); }
 
 }  // namespace xtd
