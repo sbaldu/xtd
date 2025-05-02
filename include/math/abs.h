@@ -19,7 +19,7 @@ namespace xtd {
     return ::abs(x);
 #elif defined(XTD_TARGET_SYCL)
     // SYCL device code
-    return sycl::abs(x);
+    return sycl::fabs(x);
 #else
     // standard C++ code
     return std::abs(x);
@@ -35,7 +35,7 @@ namespace xtd {
     return ::abs(x);
 #elif defined(XTD_TARGET_SYCL)
     // SYCL device code
-    return sycl::abs(x);
+    return sycl::fabs(x);
 #else
     // standard C++ code
     return std::abs(x);
