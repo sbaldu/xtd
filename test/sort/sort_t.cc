@@ -11,11 +11,30 @@
 
 TEST_CASE("sortCPU", "[sort]") {
   const int N = 100;
+  std::random_device rd;
+  std::mt19937 rng(rd());
+
   std::vector<int> values(N);
   std::iota(values.begin(), values.end(), 0);
-  std::random_shuffle(values.begin(), values.end());
+  std::shuffle(values.begin(), values.end(), rng);
 
-  xtd::sort(values.begin(), values.end());
+  SECTION("Default comparison") {
+    xtd::sort(values.begin(), values.end());
+    REQUIRE(std::ranges::equal(values, std::views::iota(N, 0)));
+  }
 
-  REQUIRE_THAT(std::equal(values, std::views::iota(N, 0)));
+  SECTION("Greater comparison") {
+    xtd::sort(values.begin(), values.end(), std::greater<int>());
+    REQUIRE(std::ranges::equal(values, std::views::iota(N - 1, -1)));
+  }
+
+  SECTION("Unseq execution policy") {
+    xtd::sort(std::execution::unseq, values.begin(), values.end());
+    REQUIRE(std::ranges::equal(values, std::views::iota(N, 0)));
+  }
+
+  SECTION("Unseq execution policy with greater comparison") {
+    xtd::sort(std::execution::unseq, values.begin(), values.end(), std::greater<int>());
+    REQUIRE(std::ranges::equal(values, std::views::iota(N - 1, -1)));
+  }
 }
