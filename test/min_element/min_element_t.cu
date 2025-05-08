@@ -13,6 +13,7 @@
 #include "common/cuda_check.h"
 #include <cuda_runtime.h>
 #include <thrust/copy.h>
+#include <thrust/execution_policy.h>
 
 TEST_CASE("min_elementCUDA", "[min_element]") {
   const int N = 100;
@@ -33,14 +34,14 @@ TEST_CASE("min_elementCUDA", "[min_element]") {
   SECTION("Default comparison") {
     auto min_iter = xtd::min_element(d_values, d_values + N);
 	int min;
-	thrust::copy(d_values, d_values + 1, &min);
+	thrust::copy(thrust::device, d_values, d_values + 1, &min);
     REQUIRE(min == 0);
   }
 
   SECTION("Greater comparison") {
     auto min_iter = xtd::min_element(d_values, d_values + N, std::greater<int>());
 	int min;
-	thrust::copy(d_values, d_values + 1, &min);
+	thrust::copy(thrust::device, d_values, d_values + 1, &min);
     REQUIRE(min == N - 1);
   }
 }

@@ -17,8 +17,8 @@
 namespace xtd {
 
   template <typename ForwardIterator>
-  XTD_DEVICE_FUNCTION inline constexpr ForwardIterator min_element(ForwardIterator first,
-                                                                   ForwardIterator last) {
+  XTD_HOST_FUNCTION inline constexpr ForwardIterator min_element(ForwardIterator first,
+                                                                 ForwardIterator last) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::min_element(first, last);
 #elif defined(XTD_TARGET_HIP)
@@ -31,9 +31,9 @@ namespace xtd {
   }
 
   template <typename ExecutionPolicy, typename ForwardIterator>
-  XTD_DEVICE_FUNCTION inline constexpr ForwardIterator min_element(ExecutionPolicy&& policy,
-                                                                   ForwardIterator first,
-                                                                   ForwardIterator last) {
+  XTD_HOST_FUNCTION inline constexpr ForwardIterator min_element(ExecutionPolicy&& policy,
+                                                                 ForwardIterator first,
+                                                                 ForwardIterator last) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::min_element(std::forward<ExecutionPolicy>(policy), first, last);
 #elif defined(XTD_TARGET_HIP)
@@ -46,9 +46,9 @@ namespace xtd {
   }
 
   template <typename ForwardIterator, typename BinaryPredicate>
-  XTD_DEVICE_FUNCTION inline constexpr ForwardIterator min_element(ForwardIterator first,
-                                                                   ForwardIterator last,
-                                                                   BinaryPredicate comp) {
+  XTD_HOST_FUNCTION inline constexpr ForwardIterator min_element(ForwardIterator first,
+                                                                 ForwardIterator last,
+                                                                 BinaryPredicate comp) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::min_element(first, last, comp);
 #elif defined(XTD_TARGET_HIP)
@@ -61,10 +61,10 @@ namespace xtd {
   }
 
   template <typename ExecutionPolicy, typename ForwardIterator, typename BinaryPredicate>
-  XTD_DEVICE_FUNCTION inline constexpr ForwardIterator min_element(ExecutionPolicy&& policy,
-                                                                   ForwardIterator first,
-                                                                   ForwardIterator last,
-                                                                   BinaryPredicate comp) {
+  XTD_HOST_FUNCTION inline constexpr ForwardIterator min_element(ExecutionPolicy&& policy,
+                                                                 ForwardIterator first,
+                                                                 ForwardIterator last,
+                                                                 BinaryPredicate comp) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::min_element(std::forward<ExecutionPolicy>(policy), first, last, comp);
 #elif defined(XTD_TARGET_HIP)
@@ -77,8 +77,8 @@ namespace xtd {
   }
 
   template <typename ForwardIterator>
-  XTD_DEVICE_FUNCTION inline constexpr ForwardIterator max_element(ForwardIterator first,
-                                                                   ForwardIterator last) {
+  XTD_HOST_FUNCTION inline constexpr ForwardIterator max_element(ForwardIterator first,
+                                                                 ForwardIterator last) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::max_element(first, last);
 #elif defined(XTD_TARGET_HIP)
@@ -91,9 +91,9 @@ namespace xtd {
   }
 
   template <typename ExecutionPolicy, typename ForwardIterator>
-  XTD_DEVICE_FUNCTION inline constexpr ForwardIterator max_element(ExecutionPolicy&& policy,
-                                                                   ForwardIterator first,
-                                                                   ForwardIterator last) {
+  XTD_HOST_FUNCTION inline constexpr ForwardIterator max_element(ExecutionPolicy&& policy,
+                                                                 ForwardIterator first,
+                                                                 ForwardIterator last) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::max_element(std::forward<ExecutionPolicy>(policy), first, last);
 #elif defined(XTD_TARGET_HIP)
@@ -106,9 +106,9 @@ namespace xtd {
   }
 
   template <typename ForwardIterator, typename BinaryPredicate>
-  XTD_DEVICE_FUNCTION inline constexpr ForwardIterator max_element(ForwardIterator first,
-                                                                   ForwardIterator last,
-                                                                   BinaryPredicate comp) {
+  XTD_HOST_FUNCTION inline constexpr ForwardIterator max_element(ForwardIterator first,
+                                                                 ForwardIterator last,
+                                                                 BinaryPredicate comp) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::max_element(first, last, comp);
 #elif defined(XTD_TARGET_HIP)
@@ -121,10 +121,10 @@ namespace xtd {
   }
 
   template <typename ExecutionPolicy, typename ForwardIterator, typename BinaryPredicate>
-  XTD_DEVICE_FUNCTION inline constexpr ForwardIterator max_element(ExecutionPolicy&& policy,
-                                                                   ForwardIterator first,
-                                                                   ForwardIterator last,
-                                                                   BinaryPredicate comp) {
+  XTD_HOST_FUNCTION inline constexpr ForwardIterator max_element(ExecutionPolicy&& policy,
+                                                                 ForwardIterator first,
+                                                                 ForwardIterator last,
+                                                                 BinaryPredicate comp) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::max_element(std::forward<ExecutionPolicy>(policy), first, last, comp);
 #elif defined(XTD_TARGET_HIP)
@@ -137,7 +137,7 @@ namespace xtd {
   }
 
   template <typename ForwardIterator>
-  XTD_DEVICE_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
+  XTD_HOST_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
       ForwardIterator first, ForwardIterator last) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::minmax_element(first, last);
@@ -151,7 +151,7 @@ namespace xtd {
   }
 
   template <typename ExecutionPolicy, typename ForwardIterator>
-  XTD_DEVICE_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
+  XTD_HOST_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
       ExecutionPolicy&& policy, ForwardIterator first, ForwardIterator last) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::minmax_element(std::forward<ExecutionPolicy>(policy), first, last);
@@ -165,7 +165,7 @@ namespace xtd {
   }
 
   template <typename ForwardIterator, typename BinaryPredicate>
-  XTD_DEVICE_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
+  XTD_HOST_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
       ForwardIterator first, ForwardIterator last, BinaryPredicate comp) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::minmax_element(first, last, comp);
@@ -179,7 +179,7 @@ namespace xtd {
   }
 
   template <typename ExecutionPolicy, typename ForwardIterator, typename BinaryPredicate>
-  XTD_DEVICE_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
+  XTD_HOST_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
       ExecutionPolicy&& policy, ForwardIterator first, ForwardIterator last, BinaryPredicate comp) {
 #if defined(XTD_TARGET_CUDA)
     return thrust::minmax_element(std::forward<ExecutionPolicy>(policy), first, last, comp);

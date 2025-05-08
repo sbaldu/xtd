@@ -10,9 +10,11 @@
 #if defined(__CUDACC__) || defined(__HIPCC__)
 // CUDA or HIP/ROCm compiler
 #define XTD_DEVICE_FUNCTION __host__ __device__
+#define XTD_HOST_FUNCTION __host__
 #else
 // SYCL or standard C++ code
 #define XTD_DEVICE_FUNCTION
+#define XTD_HOST_FUNCTION
 #endif
 
 // XTD_TARGET_...

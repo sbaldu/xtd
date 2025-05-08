@@ -13,6 +13,7 @@
 #include "common/cuda_check.h"
 #include <cuda_runtime.h>
 #include <thrust/copy.h>
+#include <thrust/execution_policy.h>
 
 TEST_CASE("max_elementCUDA", "[max_element]") {
   const int N = 100;
@@ -33,14 +34,14 @@ TEST_CASE("max_elementCUDA", "[max_element]") {
   SECTION("Default comparison") {
     auto max_iter = xtd::max_element(d_values, d_values + N);
 	int max;
-	thrust::copy(d_values, d_values + 1, &max);
+	thrust::copy(thrust::device, d_values, d_values + 1, &max);
     REQUIRE(max == N - 1);
   }
 
   SECTION("Greater comparison") {
     auto max_iter = xtd::max_element(d_values, d_values + N, std::greater<int>());
 	int max;
-	thrust::copy(d_values, d_values + 1, &max);
+	thrust::copy(thrust::device, d_values, d_values + 1, &max);
     REQUIRE(max == 0);
   }
 }
