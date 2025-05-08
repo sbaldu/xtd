@@ -7,7 +7,7 @@ CXX := g++
 GCC_TOOLCHAIN := $(abspath $(dir $(shell which $(CXX)))/..)
 GCC_TARGET    := $(shell $(CXX) -dumpmachine)
 # Catch2 needs -Wno-unused-variable
-HOST_CXXFLAGS := -O2 -fPIC -pthread -march=native -Wall -Wextra -Werror -Wfatal-errors -Wno-unused-variable
+HOST_CXXFLAGS := -O2 -fPIC -pthread -march=native -Wall -Wextra -Wfatal-errors -Wno-unused-variable
 
 # Compiler flags supported by GCC but not by the LLVM-based compilers (clang, hipcc, icpx, etc.)
 LLVM_UNSUPPORTED_CXXFLAGS := --param vect-max-version-for-alias-checks=50 -Werror=format-contains-nul -Wno-non-template-friend -Werror=return-local-addr -Werror=unused-but-set-variable
@@ -31,11 +31,11 @@ else
   CUDA_NVCC := $(CUDA_BASE)/bin/nvcc
   define CUFLAGS_template
     $(2)NVCC_FLAGS := $$(foreach ARCH,$(1),-gencode arch=compute_$$(ARCH),code=[sm_$$(ARCH),compute_$$(ARCH)]) -Wno-deprecated-gpu-targets -Xcudafe --diag_suppress=esa_on_defaulted_function_ignored --expt-relaxed-constexpr --expt-extended-lambda --generate-line-info --source-in-ptx --display-error-number --threads $$(words $(1)) --cudart=shared
-    $(2)NVCC_COMMON := -std=c++17 -O3 -g $$($(2)NVCC_FLAGS) -ccbin $(CXX) --compiler-options '$(HOST_CXXFLAGS)'
+    $(2)NVCC_COMMON := -std=c++20 -O3 -g $$($(2)NVCC_FLAGS) -ccbin $(CXX) --compiler-options '$(HOST_CXXFLAGS)'
     $(2)CUDA_CUFLAGS := $$($(2)NVCC_COMMON)
   endef
   $(eval $(call CUFLAGS_template,$(CUDA_ARCH),))
-  NVCC_COMMON := -std=c++17 -O3 -g $(NVCC_FLAGS) -ccbin $(CXX) --compiler-options '$(HOST_CXXFLAGS)'
+  NVCC_COMMON := -std=c++20 -O3 -g $(NVCC_FLAGS) -ccbin $(CXX) --compiler-options '$(HOST_CXXFLAGS)'
   CUDA_CUFLAGS := $(NVCC_COMMON)
 endif
 
@@ -51,7 +51,7 @@ else
   ROCM_DEPS := $(ROCM_LIBDIR)/libamdhip64.so
   ROCM_ARCH := gfx900 gfx90a gfx1030
   ROCM_HIPCC := $(ROCM_BASE)/bin/hipcc
-  HIPCC_CXXFLAGS := -fno-gpu-rdc $(foreach ARCH,$(ROCM_ARCH),--offload-arch=$(ARCH)) $(filter-out $(LLVM_UNSUPPORTED_CXXFLAGS),$(CXXFLAGS)) --target=$(GCC_TARGET) --gcc-toolchain=$(GCC_TOOLCHAIN) -I$(ROCM_BASE)/include/hip -Wno-unused-result
+  HIPCC_CXXFLAGS := -fno-gpu-rdc $(foreach ARCH,$(ROCM_ARCH),--offload-arch=$(ARCH)) $(filter-out $(LLVM_UNSUPPORTED_CXXFLAGS),$(CXXFLAGS)) --target=$(GCC_TARGET) --gcc-toolchain=$(GCC_TOOLCHAIN) -I$(ROCM_BASE)/include/hip -I$(ROCM_BASE)/include/thrust -Wno-unused-result
   HIPCC_LDFLAGS := $(LDFLAGS) --target=$(GCC_TARGET) --gcc-toolchain=$(GCC_TOOLCHAIN)
 endif
 
@@ -67,7 +67,7 @@ else
   SYCL_CXX          := $(SYCL_BASE)/bin/icpx
   SYCL_CPU_TARGET   := -fsycl-targets=spir64_x86_64
   SYCL_FLAGS        := -fsycl -fp-model=precise
-  SYCL_CXXFLAGS     := $(filter-out $(LLVM_UNSUPPORTED_CXXFLAGS),$(CXXFLAGS)) $(SYCL_FLAGS) -Wno-unused-variable
+  SYCL_CXXFLAGS     := $(filter-out $(LLVM_UNSUPPORTED_CXXFLAGS),$(CXXFLAGS)) $(SYCL_FLAGS) -Wno-unused-variable -Wunused-parameter
   SYCL_LDFLAGS      :=
 
   # Check for Intel GPU existence
