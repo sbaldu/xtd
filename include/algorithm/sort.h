@@ -17,7 +17,7 @@
 namespace xtd {
 
   template <typename RandomAccessIterator>
-  XTD_DEVICE_FUNCTION inline constexpr void sort(RandomAccessIterator first,
+  XTD_HOST_FUNCTION inline constexpr void sort(RandomAccessIterator first,
                                                  RandomAccessIterator last) {
 #if defined(XTD_TARGET_CUDA)
     thrust::sort(first, last);
@@ -31,7 +31,7 @@ namespace xtd {
   }
 
   template <typename ExecutionPolicy, typename RandomAccessIterator>
-  XTD_DEVICE_FUNCTION inline constexpr void sort(ExecutionPolicy&& policy,
+  XTD_HOST_FUNCTION inline constexpr void sort(ExecutionPolicy&& policy,
                                                  RandomAccessIterator first,
                                                  RandomAccessIterator last) {
 #if defined(XTD_TARGET_CUDA)
@@ -46,7 +46,7 @@ namespace xtd {
   }
 
   template <typename RandomAccessIterator, typename Compare>
-  XTD_DEVICE_FUNCTION inline constexpr void sort(RandomAccessIterator first,
+  XTD_HOST_FUNCTION inline constexpr void sort(RandomAccessIterator first,
                                                  RandomAccessIterator last,
                                                  Compare comp) {
 #if defined(XTD_TARGET_CUDA)
@@ -61,7 +61,7 @@ namespace xtd {
   }
 
   template <typename ExecutionPolicy, typename RandomAccessIterator, typename Compare>
-  XTD_DEVICE_FUNCTION inline constexpr void sort(ExecutionPolicy&& policy,
+  XTD_HOST_FUNCTION inline constexpr void sort(ExecutionPolicy&& policy,
                                                  RandomAccessIterator first,
                                                  RandomAccessIterator last,
                                                  Compare comp) {

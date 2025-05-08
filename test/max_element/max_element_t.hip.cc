@@ -33,14 +33,14 @@ TEST_CASE("max_elementHIP", "[max_element]") {
   SECTION("Default comparison") {
     auto max_iter = xtd::max_element(d_values, d_values + N);
 	int max;
-	thrust::copy(d_values, d_values + 1, &max);
+	thrust::copy(max_iter, max_iter + 1, &max);
     REQUIRE(max == N - 1);
   }
 
   SECTION("Greater comparison") {
     auto max_iter = xtd::max_element(d_values, d_values + N, std::greater<int>());
 	int max;
-	thrust::copy(d_values, d_values + 1, &max);
+	thrust::copy(max_iter, max_iter + 1, &max);
     REQUIRE(max == 0);
   }
 }

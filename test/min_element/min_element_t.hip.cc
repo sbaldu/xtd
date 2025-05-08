@@ -33,14 +33,14 @@ TEST_CASE("min_elementHIP", "[min_element]") {
   SECTION("Default comparison") {
     auto min_iter = xtd::min_element(d_values, d_values + N);
 	int min;
-	thrust::copy(d_values, d_values + 1, &min);
+	thrust::copy(min_iter, min_iter + 1, &min);
     REQUIRE(min == 0);
   }
 
   SECTION("Greater comparison") {
     auto min_iter = xtd::min_element(d_values, d_values + N, std::greater<int>());
 	int min;
-	thrust::copy(d_values, d_values + 1, &min);
+	thrust::copy(min_iter, min_iter + 1, &min);
     REQUIRE(min == N - 1);
   }
 }
