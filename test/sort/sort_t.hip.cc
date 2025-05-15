@@ -29,21 +29,24 @@ TEST_CASE("sortHIP", "[sort]") {
   std::vector<int> values(N);
   std::iota(values.begin(), values.end(), 0);
   std::shuffle(values.begin(), values.end(), rng);
-  xtd::sort(values.begin(), values.end());
-
-  hipStream_t stream;
-  HIP_CHECK(hipStreamCreate(&stream));
 
   int* d_values;
-  HIP_CHECK(hipMallocAsync(&d_values, N * sizeof(int), stream));
-  HIP_CHECK(hipMemcpyAsync(d_values, values.data(), N * sizeof(int), hipMemcpyHostToDevice, stream));
-  xtd::sort(d_values, d_values + N);
-  HIP_CHECK(hipGetLastError());
-  HIP_CHECK(hipMemcpyAsync(values.data(), d_values, N * sizeof(int), hipMemcpyDeviceToHost, stream));
-  HIP_CHECK(hipStreamSynchronize(stream));
+  HIP_CHECK(hipMalloc(&d_values, N * sizeof(int)));
+  HIP_CHECK(hipMemcpy(d_values, values.data(), N * sizeof(int), hipMemcpyHostToDevice));
 
-  REQUIRE(std::ranges::equal(values, std::views::iota(N, 0)));
+  SECTION("Default comparison") {
+    xtd::sort(d_values, d_values + N);
+    HIP_CHECK(hipMemcpy(values.data(), d_values, N * sizeof(int), hipMemcpyDeviceToHost));
 
-  HIP_CHECK(hipFreeAsync(d_values, stream));
-  HIP_CHECK(hipStreamDestroy(stream));
+    REQUIRE(std::ranges::equal(values, std::views::iota(0, N)));
+  }
+
+  SECTION("Greater comparison") {
+    xtd::sort(d_values, d_values + N, std::greater<int>{});
+    HIP_CHECK(hipMemcpy(values.data(), d_values, N * sizeof(int), hipMemcpyDeviceToHost));
+
+    REQUIRE(std::ranges::equal(values, std::views::iota(0, N) | std::views::reverse));
+  }
+
+  HIP_CHECK(hipFree(d_values));
 }

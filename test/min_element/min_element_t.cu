@@ -24,12 +24,9 @@ TEST_CASE("min_elementCUDA", "[min_element]") {
   std::iota(values.begin(), values.end(), 0);
   std::shuffle(values.begin(), values.end(), rng);
 
-  cudaStream_t stream;
-  CUDA_CHECK(cudaStreamCreate(&stream));
-
   int* d_values;
-  CUDA_CHECK(cudaMallocAsync(&d_values, N * sizeof(int), stream));
-  CUDA_CHECK(cudaMemcpyAsync(d_values, values.data(), N * sizeof(int), cudaMemcpyHostToDevice, stream));
+  CUDA_CHECK(cudaMalloc(&d_values, N * sizeof(int)));
+  CUDA_CHECK(cudaMemcpy(d_values, values.data(), N * sizeof(int), cudaMemcpyHostToDevice));
 
   SECTION("Default comparison") {
     auto min_iter = xtd::min_element(d_values, d_values + N);
@@ -44,4 +41,6 @@ TEST_CASE("min_elementCUDA", "[min_element]") {
 	thrust::copy(thrust::device, min_iter, min_iter + 1, &min);
     REQUIRE(min == N - 1);
   }
+
+  CUDA_CHECK(cudaFree(d_values));
 }

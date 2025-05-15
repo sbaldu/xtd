@@ -82,7 +82,7 @@ namespace xtd {
 #if defined(XTD_CUDA_BACKEND)
     return thrust::max_element(thrust::device, first, last);
 #elif defined(XTD_HIP_BACKEND)
-    return rocthrust::max_element(first, last);
+    return rocthrust::max_element(thrust::hip::par, first, last);
 #elif defined(XTD_SYCL_BACKEND)
     return oneapi::dpl::max_element(oneapi::dpl::execution::dpcpp_default, first, last);
 #else
@@ -110,9 +110,9 @@ namespace xtd {
                                                                  ForwardIterator last,
                                                                  BinaryPredicate comp) {
 #if defined(XTD_CUDA_BACKEND)
-    return thrust::max_element(first, last, comp);
+    return thrust::max_element(thrust::device, first, last, comp);
 #elif defined(XTD_HIP_BACKEND)
-    return rocthrust::max_element(first, last, comp);
+    return rocthrust::max_element(thrust::hip::par, first, last, comp);
 #elif defined(XTD_SYCL_BACKEND)
     return oneapi::dpl::max_element(oneapi::dpl::execution::dpcpp_default, first, last, comp);
 #else
@@ -140,9 +140,9 @@ namespace xtd {
   XTD_HOST_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
       ForwardIterator first, ForwardIterator last) {
 #if defined(XTD_CUDA_BACKEND)
-    return thrust::minmax_element(first, last);
+    return thrust::minmax_element(thrust::device, first, last);
 #elif defined(XTD_HIP_BACKEND)
-    return rocthrust::minmax_element(first, last);
+    return rocthrust::minmax_element(thrust::hip::par, first, last);
 #elif defined(XTD_SYCL_BACKEND)
     return oneapi::dpl::minmax_element(oneapi::dpl::execution::dpcpp_default, first, last);
 #else
@@ -168,9 +168,9 @@ namespace xtd {
   XTD_HOST_FUNCTION inline constexpr std::pair<ForwardIterator, ForwardIterator> minmax_element(
       ForwardIterator first, ForwardIterator last, BinaryPredicate comp) {
 #if defined(XTD_CUDA_BACKEND)
-    return thrust::minmax_element(first, last, comp);
+    return thrust::minmax_element(thrust::device, first, last, comp);
 #elif defined(XTD_HIP_BACKEND)
-    return rocthrust::minmax_element(first, last, comp);
+    return rocthrust::minmax_element(thrust::hip::par, first, last, comp);
 #elif defined(XTD_SYCL_BACKEND)
     return oneapi::dpl::minmax_element(oneapi::dpl::execution::dpcpp_default, first, last, comp);
 #else

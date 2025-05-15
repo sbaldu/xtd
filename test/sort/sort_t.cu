@@ -29,21 +29,24 @@ TEST_CASE("sortCUDA", "[sort]") {
   std::vector<int> values(N);
   std::iota(values.begin(), values.end(), 0);
   std::shuffle(values.begin(), values.end(), rng);
-  xtd::sort(values.begin(), values.end());
-
-  cudaStream_t stream;
-  CUDA_CHECK(cudaStreamCreate(&stream));
 
   int* d_values;
-  CUDA_CHECK(cudaMallocAsync(&d_values, N * sizeof(int), stream));
-  CUDA_CHECK(cudaMemcpyAsync(d_values, values.data(), N * sizeof(int), cudaMemcpyHostToDevice, stream));
-  xtd::sort(d_values, d_values + N);
-  CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaMemcpyAsync(values.data(), d_values, N * sizeof(int), cudaMemcpyDeviceToHost, stream));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
+  CUDA_CHECK(cudaMalloc(&d_values, N * sizeof(int)));
+  CUDA_CHECK(cudaMemcpy(d_values, values.data(), N * sizeof(int), cudaMemcpyHostToDevice));
 
-  REQUIRE(std::ranges::equal(values, std::views::iota(N, 0)));
+  SECTION("Default comparison") {
+    xtd::sort(d_values, d_values + N);
+    CUDA_CHECK(cudaMemcpy(values.data(), d_values, N * sizeof(int), cudaMemcpyDeviceToHost));
 
-  CUDA_CHECK(cudaFreeAsync(d_values, stream));
-  CUDA_CHECK(cudaStreamDestroy(stream));
+    REQUIRE(std::ranges::equal(values, std::views::iota(0, N)));
+  }
+
+  SECTION("Greater comparison") {
+    xtd::sort(d_values, d_values + N, std::greater<int>{});
+    CUDA_CHECK(cudaMemcpy(values.data(), d_values, N * sizeof(int), cudaMemcpyDeviceToHost));
+
+    REQUIRE(std::ranges::equal(values, std::views::iota(0, N) | std::views::reverse));
+  }
+
+  CUDA_CHECK(cudaFree(d_values));
 }

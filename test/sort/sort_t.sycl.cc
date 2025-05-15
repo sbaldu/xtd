@@ -32,10 +32,20 @@ TEST_CASE("sortSYCL", "[sort]") {
 
   auto *d_values = sycl::malloc_device<int>(N, queue);
   queue.memcpy(d_result, values.data(), N * sizeof(int)).wait();
-  xtd::sort(d_values, d_values + N);
-  queue.memcpy(values.data(), d_values, N * sizeof(int)).wait();
 
-  REQUIRE(std::ranges::equal(values, std::views::iota(N, 0)));
+  SECTION("Default comparison") {
+    xtd::sort(d_values, d_values + N);
+    queue.memcpy(values.data(), d_values, N * sizeof(int)).wait();
+
+    REQUIRE(std::ranges::equal(values, std::views::iota(0, N)));
+  }
+
+  SECTION("Greater comparison") {
+    xtd::sort(d_values, d_values + N, std::greater<int>{});
+    queue.memcpy(values.data(), d_values, N * sizeof(int)).wait();
+
+    REQUIRE(std::ranges::equal(values, std::views::iota(0, N) | std::views::reverse));
+  }
 
   sycl::free(d_values, queue);
 }

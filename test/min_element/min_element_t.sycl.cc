@@ -34,8 +34,13 @@ TEST_CASE("sortSYCL", "[sort]") {
   queue.memcpy(d_values, values.data(), N * sizeof(int)).wait();
 
   SECTION("Default comparison") {
-	auto min = xtd::min_element(d_values, d_values + N);
-	REQUIRE(*min == 0);
+    auto min = xtd::min_element(d_values, d_values + N);
+    REQUIRE(*min == 0);
+  }
+
+  SECTION("Greater comparison") {
+    auto min = xtd::min_element(d_values, d_values + N, std::greater<int>{});
+    REQUIRE(*min == N - 1);
   }
 
   sycl::free(d_values, queue);

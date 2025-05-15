@@ -23,24 +23,23 @@ TEST_CASE("max_elementHIP", "[max_element]") {
   std::iota(values.begin(), values.end(), 0);
   std::shuffle(values.begin(), values.end(), rng);
 
-  hipStream_t stream;
-  HIP_CHECK(hipStreamCreate(&stream));
-
   int* d_values;
-  HIP_CHECK(hipMallocAsync(&d_values, N * sizeof(int), stream));
-  HIP_CHECK(hipMemcpyAsync(d_values, values.data(), N * sizeof(int), hipMemcpyHostToDevice, stream));
+  HIP_CHECK(hipMalloc(&d_values, N * sizeof(int)));
+  HIP_CHECK(hipMemcpy(d_values, values.data(), N * sizeof(int), hipMemcpyHostToDevice));
 
   SECTION("Default comparison") {
     auto max_iter = xtd::max_element(d_values, d_values + N);
 	int max;
-	thrust::copy(max_iter, max_iter + 1, &max);
+	thrust::copy(thrust::hip::par, max_iter, max_iter + 1, &max);
     REQUIRE(max == N - 1);
   }
 
   SECTION("Greater comparison") {
     auto max_iter = xtd::max_element(d_values, d_values + N, std::greater<int>());
 	int max;
-	thrust::copy(max_iter, max_iter + 1, &max);
+	thrust::copy(thrust::hip::par, max_iter, max_iter + 1, &max);
     REQUIRE(max == 0);
   }
+
+  HIP_CHECK(hipFree(d_values));
 }

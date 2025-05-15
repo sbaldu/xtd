@@ -34,8 +34,13 @@ TEST_CASE("sortSYCL", "[sort]") {
   queue.memcpy(d_values, values.data(), N * sizeof(int)).wait();
 
   SECTION("Default comparison") {
-	auto max = xtd::max_element(d_values, d_values + N);
-	REQUIRE(*max == N - 1);
+    auto max = xtd::max_element(d_values, d_values + N);
+    REQUIRE(*max == N - 1);
+  }
+
+  SECTION("Greater comparison") {
+    auto max = xtd::max_element(d_values, d_values + N, std::greater<int>{});
+    REQUIRE(*max == 0);
   }
 
   sycl::free(d_values, queue);

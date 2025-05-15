@@ -20,9 +20,9 @@ namespace xtd {
   XTD_HOST_FUNCTION inline constexpr void sort(RandomAccessIterator first,
                                                RandomAccessIterator last) {
 #if defined(XTD_CUDA_BACKEND)
-    thrust::sort(first, last);
+    thrust::sort(thrust::device, first, last);
 #elif defined(XTD_HIP_BACKEND)
-    rocthrust::sort(first, last);
+    rocthrust::sort(thrustd::hip::par, first, last);
 #elif defined(XTD_SYCL_BACKEND)
     oneapi::dpl::sort(oneapi::dpl::execution::dpcpp_default, first, last);
 #else
@@ -50,9 +50,9 @@ namespace xtd {
                                                RandomAccessIterator last,
                                                Compare comp) {
 #if defined(XTD_CUDA_BACKEND)
-    thrust::sort(first, last, comp);
+    thrust::sort(thrust::device, first, last, comp);
 #elif defined(XTD_HIP_BACKEND)
-    rocthrust::sort(first, last, comp);
+    rocthrust::sort(thrust::hip::par, first, last, comp);
 #elif defined(XTD_SYCL_BACKEND)
     oneapi::dpl::sort(oneapi::dpl::execution::dpcpp_default, first, last, comp);
 #else
