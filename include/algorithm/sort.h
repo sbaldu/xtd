@@ -3,11 +3,11 @@
 
 #include "internal/defines.h"
 
-#if defined(XTD_TARGET_CUDA)
+#if defined(XTD_CUDA_BACKEND)
 #include <thrust/sort.h>
-#elif defined(XTD_TARGET_HIP)
+#elif defined(XTD_HIP_BACKEND)
 #include <rocthrust/sort.h>
-#elif defined(XTD_TARGET_SYCL)
+#elif defined(XTD_SYCL_BACKEND)
 #include <oneapi/dpl/algorithm>
 #include <oneapi/dpl/execution>
 #else
@@ -18,12 +18,12 @@ namespace xtd {
 
   template <typename RandomAccessIterator>
   XTD_HOST_FUNCTION inline constexpr void sort(RandomAccessIterator first,
-                                                 RandomAccessIterator last) {
-#if defined(XTD_TARGET_CUDA)
+                                               RandomAccessIterator last) {
+#if defined(XTD_CUDA_BACKEND)
     thrust::sort(first, last);
-#elif defined(XTD_TARGET_HIP)
+#elif defined(XTD_HIP_BACKEND)
     rocthrust::sort(first, last);
-#elif defined(XTD_TARGET_SYCL)
+#elif defined(XTD_SYCL_BACKEND)
     oneapi::dpl::sort(oneapi::dpl::execution::dpcpp_default, first, last);
 #else
     std::sort(first, last);
@@ -32,13 +32,13 @@ namespace xtd {
 
   template <typename ExecutionPolicy, typename RandomAccessIterator>
   XTD_HOST_FUNCTION inline constexpr void sort(ExecutionPolicy&& policy,
-                                                 RandomAccessIterator first,
-                                                 RandomAccessIterator last) {
-#if defined(XTD_TARGET_CUDA)
+                                               RandomAccessIterator first,
+                                               RandomAccessIterator last) {
+#if defined(XTD_CUDA_BACKEND)
     thrust::sort(std::forward<ExecutionPolicy>(policy), first, last);
-#elif defined(XTD_TARGET_HIP)
+#elif defined(XTD_HIP_BACKEND)
     rocthrust::sort(std::forward<ExecutionPolicy>(policy), first, last);
-#elif defined(XTD_TARGET_SYCL)
+#elif defined(XTD_SYCL_BACKEND)
     oneapi::dpl::sort(std::forward<ExecutionPolicy>(policy), first, last);
 #else
     std::sort(std::forward<ExecutionPolicy>(policy), first, last);
@@ -47,13 +47,13 @@ namespace xtd {
 
   template <typename RandomAccessIterator, typename Compare>
   XTD_HOST_FUNCTION inline constexpr void sort(RandomAccessIterator first,
-                                                 RandomAccessIterator last,
-                                                 Compare comp) {
-#if defined(XTD_TARGET_CUDA)
+                                               RandomAccessIterator last,
+                                               Compare comp) {
+#if defined(XTD_CUDA_BACKEND)
     thrust::sort(first, last, comp);
-#elif defined(XTD_TARGET_HIP)
+#elif defined(XTD_HIP_BACKEND)
     rocthrust::sort(first, last, comp);
-#elif defined(XTD_TARGET_SYCL)
+#elif defined(XTD_SYCL_BACKEND)
     oneapi::dpl::sort(oneapi::dpl::execution::dpcpp_default, first, last, comp);
 #else
     std::sort(first, last, comp);
@@ -62,14 +62,14 @@ namespace xtd {
 
   template <typename ExecutionPolicy, typename RandomAccessIterator, typename Compare>
   XTD_HOST_FUNCTION inline constexpr void sort(ExecutionPolicy&& policy,
-                                                 RandomAccessIterator first,
-                                                 RandomAccessIterator last,
-                                                 Compare comp) {
-#if defined(XTD_TARGET_CUDA)
+                                               RandomAccessIterator first,
+                                               RandomAccessIterator last,
+                                               Compare comp) {
+#if defined(XTD_CUDA_BACKEND)
     thrust::sort(std::forward<ExecutionPolicy>(policy), first, last, comp);
-#elif defined(XTD_TARGET_HIP)
+#elif defined(XTD_HIP_BACKEND)
     rocthrust::sort(std::forward<ExecutionPolicy>(policy), first, last, comp);
-#elif defined(XTD_TARGET_SYCL)
+#elif defined(XTD_SYCL_BACKEND)
     oneapi::dpl::sort(std::forward<ExecutionPolicy>(policy), first, last, comp);
 #else
     std::sort(std::forward<ExecutionPolicy>(policy), first, last, comp);

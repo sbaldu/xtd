@@ -17,6 +17,16 @@
 #define XTD_HOST_FUNCTION
 #endif
 
+#if defined(__CUDACC__)
+#define XTD_CUDA_BACKEND
+#elif defined(__HIPCC__)
+#define XTD_HIP_BACKEND
+#elif defined(__SYCL_COMPILER_VERSION)
+#define XTD_SYCL_BACKEND
+#else
+#define XTD_SERIAL_BACKEND
+#endif
+
 // XTD_TARGET_...
 #if defined(__CUDA_ARCH__)
 // CUDA device code
