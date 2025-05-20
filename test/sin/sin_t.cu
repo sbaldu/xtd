@@ -11,7 +11,7 @@
 #include <catch.hpp>
 
 // xtd headers
-#include "math.h"
+#include "xtd/math.h"
 
 // test headers
 #include "common/cuda_check.h"

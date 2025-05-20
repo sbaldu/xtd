@@ -8,7 +8,7 @@
 #include <catch.hpp>
 
 // xtd headers
-#include "math.h"
+#include "xtd/math.h"
 
 TEST_CASE("sinCPU", "[sin]") {
   auto const epsilon = std::numeric_limits<double>::epsilon();

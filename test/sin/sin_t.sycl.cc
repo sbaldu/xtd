@@ -11,7 +11,7 @@
 #include <catch.hpp>
 
 // xtd headers
-#include "math.h"
+#include "xtd/math.h"
 
 TEST_CASE("sinSYCL", "[sin]") {
   try {
