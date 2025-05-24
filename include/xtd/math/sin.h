@@ -9,7 +9,7 @@
 #include <cmath>
 #include <type_traits>
 
-#include "../internal/defines.h"
+#include "xtd/internal/defines.h"
 #include <type_traits>
 
 #if !defined(XTD_TARGET_CUDA) && !defined(XTD_TARGET_HIP) && !defined(XTD_TARGET_SYCL)
