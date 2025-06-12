@@ -8,7 +8,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
-#include "algorithm.h"
+#include "xtd/algorithm.h"
 
 TEST_CASE("max_elementCPU", "[max_element]") {
   const int N = 100;

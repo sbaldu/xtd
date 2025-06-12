@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "internal/defines.h"
+#include "xtd/internal/defines.h"
 
 #if defined(XTD_TARGET_CUDA)
 #include <thrust/reduce.h>

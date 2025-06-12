@@ -7,7 +7,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
-#include "algorithm.h"
+#include "xtd/algorithm.h"
 
 #include <sycl/sycl.hpp>
 

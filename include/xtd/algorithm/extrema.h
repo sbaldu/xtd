@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "internal/defines.h"
+#include "xtd/internal/defines.h"
 
 #if defined(XTD_CUDA_BACKEND)
 #include <thrust/extrema.h>

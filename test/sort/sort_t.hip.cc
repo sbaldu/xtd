@@ -7,7 +7,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
-#include "algorithm.h"
+#include "xtd/algorithm.h"
 
 #include "common/hip_check.h"
 #include <hip_runtime.h>
