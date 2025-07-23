@@ -3,10 +3,8 @@
 
 #include "internal/defines.h"
 
-#if defined(XTD_CUDA_BACKEND)
+#if defined(XTD_CUDA_BACKEND) || defined(XTD_HIP_BACKEND)
 #include <thrust/extrema.h>
-#elif defined(XTD_HIP_BACKEND)
-#include <rocthrust/extrema.h>
 #elif defined(XTD_SYCL_BACKEND)
 #include <oneapi/dpl/algorithm>
 #include <oneapi/dpl/execution>
