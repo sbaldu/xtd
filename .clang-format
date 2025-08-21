@@ -2,7 +2,7 @@
 Language: Cpp
 Standard: c++20
 BasedOnStyle: Google
-ColumnLimit: 100
+ColumnLimit: 120
 NamespaceIndentation: All
 SortIncludes: false
 IndentWidth: 2
@@ -10,8 +10,10 @@ AccessModifierOffset: -2
 PenaltyBreakComment: 30
 PenaltyExcessCharacter: 100
 AlignAfterOpenBracket: Align
+AllowShortBlocksOnASingleLine: false
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
 ReflowComments: false
 BinPackArguments: false
