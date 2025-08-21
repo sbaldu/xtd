@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "internal/defines.h"
@@ -42,7 +41,7 @@ namespace xtd {
 #endif
   }
 
-  XTD_DEVICE_FUNCTION inline constexpr float log1pf(float x) { return std::log1p(x); }
+  XTD_DEVICE_FUNCTION inline constexpr float log1pf(float x) { return log1p(x); }
 
   template <std::integral T>
   XTD_DEVICE_FUNCTION inline constexpr double log1p(T x) {
