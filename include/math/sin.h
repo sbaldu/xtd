@@ -6,25 +6,22 @@
 
 #pragma once
 
-#include "internal/defines.h"
 #include <concepts>
-
-#if !defined(XTD_TARGET_CUDA) && !defined(XTD_TARGET_HIP) && !defined(XTD_TARGET_SYCL)
 #include <cmath>
-#endif
+
+#include "internal/defines.h"
 
 namespace xtd {
 
-  /* Computes the sine of arg (measured in radians),
-   * in single precision.
+  /* Computes the sine of arg (measured in radians), in single precision.
    */
   XTD_DEVICE_FUNCTION inline constexpr float sin(float arg) {
 #if defined(XTD_TARGET_CUDA)
     // CUDA device code
-    return ::sin(arg);
+    return ::sinf(arg);
 #elif defined(XTD_TARGET_HIP)
     // HIP/ROCm device code
-    return ::sin(arg);
+    return ::sinf(arg);
 #elif defined(XTD_TARGET_SYCL)
     // SYCL device code
     return sycl::sin(arg);
@@ -34,8 +31,7 @@ namespace xtd {
 #endif
   }
 
-  /* Computes the sine of arg (measured in radians),
-   * in double precision.
+  /* Computes the sine of arg (measured in radians), in double precision.
    */
   XTD_DEVICE_FUNCTION inline constexpr double sin(double arg) {
 #if defined(XTD_TARGET_CUDA)
@@ -53,25 +49,15 @@ namespace xtd {
 #endif
   }
 
-  /* Computes the sine of arg (measured in radians),
-   * in double precision.
+  /* Computes the sine of arg (measured in radians), in double precision.
    */
-  template <std::integral T>
-  XTD_DEVICE_FUNCTION inline constexpr double sin(T arg) {
+  XTD_DEVICE_FUNCTION inline constexpr double sin(std::integral auto arg) {
     return sin(static_cast<double>(arg));
   }
 
-  /* Computes the sine of arg (measured in radians),
-   * in single precision.
+  /* Computes the sine of arg (measured in radians), in single precision.
    */
-  XTD_DEVICE_FUNCTION inline constexpr float sinf(float arg) { return sin(arg); }
-
-  /* Computes the sine of arg (measured in radians),
-   * in single precision.
-   */
-  template <std::integral T>
-  XTD_DEVICE_FUNCTION inline constexpr double sinf(T arg) {
-    return sin(static_cast<float>(arg));
-  }
+  XTD_DEVICE_FUNCTION inline constexpr float sinf(std::floating_point auto arg) { return xtd::sin(static_cast<float>(arg)); }
+  XTD_DEVICE_FUNCTION inline constexpr float sinf(std::integral auto arg) { return xtd::sin(static_cast<float>(arg)); }
 
 }  // namespace xtd
