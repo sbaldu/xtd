@@ -1,3 +1,9 @@
+/*
+ * Copyright 2025 European Organization for Nuclear Research (CERN)
+ * Authors: Andrea Bocci <andrea.bocci@cern.ch>, Aurora Perego <aurora.perego@cern.ch>
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 #pragma once
 
 // C++ standard headers
