@@ -117,31 +117,22 @@ ifneq ($(ONEAPI_BASE),)
   SYCL_BASE         := $(ONEAPI_BASE)/compiler/latest
   SYCL_LIBDIR       := $(SYCL_BASE)/lib
   SYCL_CXX          := $(SYCL_BASE)/bin/icpx
-  SYCL_CPU_TARGET   := -fsycl-targets=spir64_x86_64
   SYCL_FLAGS        := -fsycl -fp-model=precise
   SYCL_CXXFLAGS     := $(filter-out $(LLVM_UNSUPPORTED_CXXFLAGS),$(CXXFLAGS)) $(SYCL_FLAGS) -Wno-unused-variable
   SYCL_LDFLAGS      :=
+  SYCL_TARGETS      := -fsycl-targets=spir64_x86_64,spir64,nvptx64-nvidia-cuda,amdgcn-amd-amdhsa -Xsycl-target-backend=amdgcn-amd-amdhsa "--offload-arch=gfx1100"
 
   # Check for Intel GPU existence
-  SYCL_LS := $(shell mktemp)
-  $(shell which sycl-ls > /dev/null 2>&1 && sycl-ls > $(SYCL_LS))
-  INTEL_GPU_EXISTS := $(shell cat $(SYCL_LS) | grep -c ext_oneapi_level_zero)
-  # Set AOT_INTEL_TARGETS based on the conditions
-  ifneq ($(INTEL_GPU_EXISTS),0)
-      ifneq ($(shell cat $(SYCL_LS) | grep -c 'GPU Flex'),0)
-          AOT_INTEL_TARGETS := -fsycl-targets=intel_gpu_acm_g10
-      else ifneq ($(shell cat $(SYCL_LS) | grep -c 'GPU Max'),0)
-          AOT_INTEL_TARGETS := -fsycl-targets=intel_gpu_pvc
-      else
-          # rely on JIT
-          AOT_INTEL_TARGETS := -fsycl-targets=spir64
-      endif
-  else
-      INTEL_GPU_EXISTS :=
-      AOT_INTEL_TARGETS :=
-  endif
-  $(shell rm -f $(SYCL_LS))
-  undefine SYCL_LS
+  #SYCL_LS := $(shell mktemp)
+  #$(shell which sycl-ls > /dev/null 2>&1 && sycl-ls --verbose 2> /dev/null > $(SYCL_LS))
+  #SYCL_GPU_TARGET := -fsycl-targets=$(shell echo $$(cat $(SYCL_LS) | grep Architecture | cut -d: -f2 | sort -u | grep intel_gpu) | tr ' ' ',')
+  #$(shell rm -f $(SYCL_LS))
+  #undefine SYCL_LS
+
+  # enable double precision floating point emulation for Intel GPUs
+  # see https://github.com/intel/compute-runtime/blob/master/opencl/doc/FAQ.md#feature-double-precision-emulation-fp64
+  export IGC_EnableDPEmulation := 1
+  export OverrideDefaultFP64Settings := 1
 endif
 
 # xtd
@@ -166,7 +157,7 @@ define TEST_template
 $(1)/bin:
 	mkdir -p $(1)/bin
 
-$(1)Test: external_catch2 $(1)/bin/$(1)_t_cc $(1)/bin/$(1)_t_cuda $(1)/bin/$(1)_t_hip $(1)/bin/$(1)_t_cpusycl $(1)/bin/$(1)_t_gpusycl
+$(1)Test: external_catch2 $(1)/bin/$(1)_t_cc $(1)/bin/$(1)_t_cuda $(1)/bin/$(1)_t_hip $(1)/bin/$(1)_t_sycl
 
 $(1)/bin/$(1)_t_cc: $(1)/$(1)_t.cc | $(1)/bin
 	$(CXX) $(CXXFLAGS) $(LIB_INCLUDE) $$< -o $$@
@@ -187,24 +178,12 @@ $(1)/bin/$(1)_t_hip: $(1)/$(1)_t.hip.cc | $(1)/bin
 		$(ROCM_HIPCC) $(HIPCC_CXXFLAGS) $(HIPCC_LDFLAGS) $(LIB_INCLUDE) $$< -o $$@; \
 	fi
 
-$(1)/bin/$(1)_t_cpusycl: $(1)/$(1)_t.sycl.cc | $(1)/bin
+$(1)/bin/$(1)_t_sycl: $(1)/$(1)_t.sycl.cc | $(1)/bin
 	@if [ -z "$(ONEAPI_BASE)" ]; then \
 		echo "Error: ONEAPI_BASE not set. Skipping $@"; \
 	else \
-		echo "$(SYCL_CXX) $(SYCL_CXXFLAGS) $(SYCL_LDFLAGS) $(SYCL_CPU_TARGET) -DONEAPI_CPU $(LIB_INCLUDE) $$< -o $$@"; \
-		$(SYCL_CXX) $(SYCL_CXXFLAGS) $(SYCL_LDFLAGS) $(SYCL_CPU_TARGET) -DONEAPI_CPU $(LIB_INCLUDE) $$< -o $$@; \
-	fi
-
-$(1)/bin/$(1)_t_gpusycl: $(1)/$(1)_t.sycl.cc | $(1)/bin
-	@if [ -z "$(ONEAPI_BASE)" ]; then \
-		echo "Error: ONEAPI_BASE not set. Skipping $@"; \
-	else \
-		if [ "$(INTEL_GPU_EXISTS)" ]; then \
-			echo "$(SYCL_CXX) $(SYCL_CXXFLAGS) $(SYCL_LDFLAGS) $(AOT_INTEL_TARGETS) $(LIB_INCLUDE) $$< -o $$@"; \
-			$(SYCL_CXX) $(SYCL_CXXFLAGS) $(SYCL_LDFLAGS) $(AOT_INTEL_TARGETS) $(LIB_INCLUDE) $$< -o $$@; \
-		else \
-    		echo "Error: Intel GPU not found. Skipping $@"; \
-    	fi \
+		echo "$(SYCL_CXX) $(SYCL_CXXFLAGS) $(SYCL_LDFLAGS) $(SYCL_TARGETS) $(LIB_INCLUDE) $$< -o $$@"; \
+		$(SYCL_CXX) $(SYCL_CXXFLAGS) $(SYCL_LDFLAGS) $(SYCL_TARGETS) $(LIB_INCLUDE) $$< -o $$@; \
 	fi
 
 # List of test executables
@@ -219,10 +198,7 @@ ifdef $(ROCM_BASE)
   TEST_EXECUTABLES += $(1)/bin/$(1)_t_hip
 endif
 ifdef $(ONEAPI_BASE)
-  TEST_EXECUTABLES += $(1)/bin/$(1)_t_cpusycl
-  ifdef $(INTEL_GPU_EXISTS)
-    TEST_EXECUTABLES += $(1)/bin/$(1)_t_gpusycl
-  endif
+  TEST_EXECUTABLES += $(1)/bin/$(1)_t_sycl
 endif
 
 run_$(1)Test: $(TEST_EXECUTABLES)

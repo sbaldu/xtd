@@ -1,38 +1,30 @@
 /*
  * Copyright 2025 European Organization for Nuclear Research (CERN)
- * Authors: Aurora Perego <aurora.perego@cern.ch>
+ * Authors: Andrea Bocci <andrea.bocci@cern.ch>, Aurora Perego <aurora.perego@cern.ch>
  * SPDX-License-Identifier: MPL-2.0
  */
 
 // C++ standard headers
 #include <cmath>
-#include <limits>
+#include <iostream>
 #include <vector>
-
-// HIP headers
-#include <hip_runtime.h>
 
 // Catch2 headers
 #define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_NO_POSIX_SIGNALS
 #include <catch.hpp>
 
+// HIP headers
+#include <hip/hip_runtime.h>
+
 // xtd headers
-#include "math.h"
+#include "math/sin.h"
 
 // test headers
 #include "common/hip_check.h"
+#include "common/hip_test.h"
 
-template <typename T>
-__global__ void sinKernel(double *result, T input) {
-  *result = static_cast<double>(xtd::sin(input));
-}
-
-template <typename T>
-__global__ void sinfKernel(double *result, T input) {
-  *result = static_cast<double>(xtd::sinf(input));
-}
-
-TEST_CASE("sinHIP", "[sin]") {
+TEST_CASE("xtd::sin", "[sin][hip]") {
   int deviceCount;
   hipError_t hipStatus = hipGetDeviceCount(&deviceCount);
 
@@ -41,46 +33,45 @@ TEST_CASE("sinHIP", "[sin]") {
     exit(EXIT_SUCCESS);
   }
 
-  HIP_CHECK(hipSetDevice(0));
-  hipStream_t q;
-  HIP_CHECK(hipStreamCreate(&q));
-
   std::vector<double> values{-1., 0., M_PI / 2, M_PI, 42.};
 
-  double *result;
-  int constexpr N = 6;
-  HIP_CHECK(hipMallocAsync(&result, N * sizeof(double), q));
+  for (int device = 0; device < deviceCount; ++device) {
+    hipDeviceProp_t properties;
+    HIP_CHECK(hipGetDeviceProperties(&properties, device));
+    SECTION(std::format("HIP GPU {}: {}", device, properties.name)) {
+      // set the current GPU
+      HIP_CHECK(hipSetDevice(device));
 
-  for (auto v : values) {
-    HIP_CHECK(hipMemsetAsync(result, 0x00, N * sizeof(double), q));
+      // create a HIP stream for all the asynchronous operations on this GPU
+      hipStream_t queue;
+      HIP_CHECK(hipStreamCreate(&queue));
 
-    sinKernel<<<1, 1, 0, q>>>(result + 0, static_cast<int>(v));
-    HIP_CHECK(hipGetLastError());
-    sinKernel<<<1, 1, 0, q>>>(result + 1, static_cast<float>(v));
-    HIP_CHECK(hipGetLastError());
-    sinKernel<<<1, 1, 0, q>>>(result + 2, static_cast<double>(v));
-    HIP_CHECK(hipGetLastError());
-    sinfKernel<<<1, 1, 0, q>>>(result + 3, static_cast<int>(v));
-    HIP_CHECK(hipGetLastError());
-    sinfKernel<<<1, 1, 0, q>>>(result + 4, static_cast<float>(v));
-    HIP_CHECK(hipGetLastError());
-    sinfKernel<<<1, 1, 0, q>>>(result + 5, static_cast<double>(v));
-    HIP_CHECK(hipGetLastError());
+      SECTION("float xtd::sin(float)") {
+        test<float, float, xtd::sin, std::sin>(queue, values);
+      }
 
-    double resultHost[N];
-    HIP_CHECK(hipMemcpyAsync(resultHost, result, N * sizeof(double), hipMemcpyDeviceToHost, q));
-    HIP_CHECK(hipStreamSynchronize(q));
+      SECTION("double xtd::sin(double)") {
+        test<double, double, xtd::sin, std::sin>(queue, values);
+      }
 
-    auto const epsilon = std::numeric_limits<double>::epsilon();
-    auto const epsilon_f = std::numeric_limits<float>::epsilon();
-    REQUIRE_THAT(resultHost[0], Catch::Matchers::WithinAbs(std::sin(static_cast<int>(v)), epsilon));
-    REQUIRE_THAT(resultHost[1], Catch::Matchers::WithinAbs(std::sin(v), epsilon_f));
-    REQUIRE_THAT(resultHost[2], Catch::Matchers::WithinAbs(std::sin(v), epsilon));
-    REQUIRE_THAT(resultHost[3], Catch::Matchers::WithinAbs(sinf(static_cast<int>(v)), epsilon_f));
-    REQUIRE_THAT(resultHost[4], Catch::Matchers::WithinAbs(sinf(v), epsilon_f));
-    REQUIRE_THAT(resultHost[5], Catch::Matchers::WithinAbs(sinf(v), epsilon_f));
+      SECTION("double xtd::sin(int)") {
+        // Note: HIP/ROCm does not provide the std::sin() overload for integer arguments.
+        test<double, int, xtd::sin, [](int arg) { return std::sin(static_cast<double>(arg)); }>(queue, values);
+      }
+
+      SECTION("float xtd::sinf(float)") {
+        test_f<float, float, xtd::sinf, std::sinf>(queue, values);
+      }
+
+      SECTION("float xtd::sinf(double)") {
+        test_f<float, double, xtd::sinf, std::sinf>(queue, values);
+      }
+
+      SECTION("float xtd::sinf(int)") {
+        test_f<float, int, xtd::sinf, std::sinf>(queue, values);
+      }
+
+      HIP_CHECK(hipStreamDestroy(queue));
+    }
   }
-
-  HIP_CHECK(hipFreeAsync(result, q));
-  HIP_CHECK(hipStreamDestroy(q));
 }
